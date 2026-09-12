@@ -1,10 +1,12 @@
 import logging
+import threading
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.database.sqlite import initialize_database
+from app.rag.restore import restore_documents
 from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
 from app.api.documents import router as documents_router
@@ -39,12 +41,12 @@ app = FastAPI(
 
 @app.on_event("startup")
 def startup_event():
-
-    logging.getLogger(__name__).info("Initializing SQLite database...")
-
+    logging.getLogger(__name__).info("Initializing database...")
+    
     initialize_database()
 
-    logging.getLogger(__name__).info("SQLite database initialized successfully.")
+    logging.getLogger(__name__).info("Database initialized successfully.")
+    threading.Thread(target=restore_documents, daemon=True).start()
 
 
 # CORS

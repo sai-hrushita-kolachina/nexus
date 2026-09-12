@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 
     chroma_persist_directory: str = "./data/chroma"
     chroma_collection_name: str = "company_knowledge"
+    documents_directory: str = "./data/documents"
 
     chunk_size: int = 800
     chunk_overlap: int = 120
@@ -44,8 +45,9 @@ class Settings(BaseSettings):
 
     min_relevance_score: float = 0.30
 
+    database_url: str | None = None
 
-    # SQLITE
+    # SQLITE (local development fallback)
     sqlite_database: str = "./data/company_ai.db"
 
 

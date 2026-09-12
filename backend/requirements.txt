@@ -22,4 +22,5 @@ numpy
 google-auth
 python-jose[cryptography]
 bcrypt
+psycopg2-binary
 email-validator

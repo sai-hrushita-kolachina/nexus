@@ -4,6 +4,8 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
+from app.config import get_settings
+from app.database.sqlite import list_document_files, save_document_file
 from app.rag.ingestion import ingest_document
 
 
@@ -17,9 +19,7 @@ router = APIRouter(
 
 # DIRECTORIES
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-DOCUMENTS_DIR = BASE_DIR / "data" / "documents"
-
+DOCUMENTS_DIR = Path(get_settings().documents_directory)
 DOCUMENTS_DIR.mkdir(parents=True, exist_ok=True)
 
 SUPPORTED_EXTENSIONS = {
@@ -35,21 +35,15 @@ SUPPORTED_EXTENSIONS = {
 @router.get("")
 def list_documents():
 
-    documents = []
-
-    for file_path in DOCUMENTS_DIR.iterdir():
-
-        if not file_path.is_file():
-            continue
-
-        if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-            continue
-
-        documents.append({
-            "filename": file_path.name,
-            "file_type": file_path.suffix.replace(".", "").lower(),
-            "size_bytes": file_path.stat().st_size
-        })
+    documents = [
+        {
+            "filename": item["filename"],
+            "file_type": item["file_type"],
+            "size_bytes": item["size_bytes"],
+        }
+        for item in list_document_files()
+        if Path(item["filename"]).suffix.lower() in SUPPORTED_EXTENSIONS
+    ]
 
     return {
         "documents": documents
@@ -81,22 +75,26 @@ async def upload_document(file: UploadFile = File(...)):
     file_path = DOCUMENTS_DIR / filename
 
     try:
-
         # SAVE FILE
 
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-
         logger.info("Uploaded document: %s", filename)
 
         # INGEST DOCUMENT
-
         result = ingest_document(str(file_path))
+
+        # KEEP A PERMANENT COPY IN THE DATABASE
+        # (local disk is wiped on free hosting)
+        save_document_file(
+            filename=filename,
+            file_type=extension.replace(".", ""),
+            content=file_path.read_bytes(),
+        )
 
         return result
 
     except ValueError as exc:
-
         # Remove invalid file
 
         if file_path.exists():
@@ -108,7 +106,6 @@ async def upload_document(file: UploadFile = File(...)):
         )
 
     except Exception as exc:
-
         logger.exception(
             "Document ingestion failed: %s",
             filename

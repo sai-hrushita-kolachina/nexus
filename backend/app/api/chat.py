@@ -1,11 +1,11 @@
 import logging
 import uuid
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.models.chat import ChatRequest
 from app.models.response import ChatResponse
-from app.database.sqlite import create_conversation, save_message, get_recent_messages
+from app.database.sqlite import (can_access_conversation, create_conversation, get_recent_messages, save_message,)
+from app.utils.auth import get_current_user
 from app.llm.manager import LLMManager
 from app.rag.conversation import ConversationRewriter
 from app.rag.hybrid_search import HybridSearch
@@ -57,7 +57,10 @@ def get_hybrid_search():
 # CHAT ENDPOINT
 
 @router.post("", response_model=ChatResponse)
-def chat(request: ChatRequest):
+def chat(
+    request: ChatRequest,
+    current_user: dict = Depends(get_current_user)
+):
 
     try:
 
@@ -76,9 +79,23 @@ def chat(request: ChatRequest):
         logger.info("New chat request: conversation=%s", conversation_id)
         logger.info("User question: %s", question)
 
-        # Create conversation if necessary
 
-        create_conversation(conversation_id=conversation_id)
+        # A user may only continue their own conversations.
+        user_id = current_user["id"]
+
+        if not can_access_conversation(conversation_id, user_id):
+            raise HTTPException(
+                status_code=404,
+                detail="Conversation not found."
+            )
+
+        # Create conversation if necessary
+        # (also trims the user's history to their latest 20)
+
+        create_conversation(
+            conversation_id=conversation_id,
+            user_id=user_id
+        )
 
         # Load conversation history
 

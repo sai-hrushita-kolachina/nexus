@@ -1,0 +1,39 @@
+ /* SOURCES */
+
+.source-panel {
+  margin-top: 17px;
+  max-width: 650px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+  overflow: hidden;
+}
+
+.source-panel-header {
+  width: 100%;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.source-panel-header:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.source-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.source-panel-content {
+  padding: 0 9px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

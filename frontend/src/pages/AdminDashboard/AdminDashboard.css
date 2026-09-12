@@ -1,0 +1,382 @@
+/* DASHBOARD */
+
+.dashboard-main {
+  min-width: 0;
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  padding: 38px clamp(20px, 5vw, 65px) 60px;
+}
+
+.dashboard-main::-webkit-scrollbar {
+  display: none;
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.page-header h1 {
+  margin: 5px 0 7px;
+  color: white;
+  font-size: 31px;
+  letter-spacing: -0.9px;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a997ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 39px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.primary-button {
+  color: white;
+  background: var(--accent);
+  box-shadow: 0 7px 20px rgba(124, 92, 255, 0.17);
+}
+
+.primary-button:hover {
+  background: var(--accent-light);
+}
+
+.secondary-button {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.stats-row {
+  max-width: 1200px;
+  margin: 0 auto 22px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  min-height: 92px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.stat-icon {
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a996ff;
+  border-radius: 10px;
+  background: var(--accent-soft);
+}
+
+.stat-card > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat-card span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.stat-card strong {
+  color: #eef1f7;
+  font-size: 22px;
+  letter-spacing: -0.4px;
+}
+
+.stat-card small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.success-text {
+  color: var(--success) !important;
+}
+
+/* ADMIN HERO */
+
+.hero-admin-card {
+  max-width: 1200px;
+  margin: 0 auto 22px;
+  min-height: 200px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  border-radius: 17px;
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(124, 92, 255, 0.13),
+      transparent 35%
+    ),
+    linear-gradient(135deg, #121625, #10141f);
+}
+
+.hero-admin-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 17px;
+}
+
+.hero-admin-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c2b6ff;
+  border-radius: 11px;
+  background: var(--accent-soft);
+}
+
+.hero-label {
+  color: #a997ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.hero-admin-card h2 {
+  max-width: 580px;
+  margin: 5px 0 9px;
+  color: white;
+  font-size: 24px;
+  letter-spacing: -0.6px;
+}
+
+.hero-admin-card p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+.hero-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #c7bcff;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hero-action:hover {
+  color: white;
+}
+
+/* ADMIN GRID */
+
+.admin-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 13px;
+}
+
+.content-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.content-card-header {
+  min-height: 76px;
+  padding: 17px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.content-card-header h2 {
+  margin: 0 0 4px;
+  color: white;
+  font-size: 15px;
+}
+
+.content-card-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.quick-actions {
+  padding: 8px 10px;
+}
+
+.quick-action {
+  width: 100%;
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  text-align: left;
+  color: var(--text);
+  border-radius: 9px;
+  background: transparent;
+}
+
+.quick-action:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.quick-action-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a996ff;
+  border-radius: 9px;
+  background: var(--accent-soft);
+}
+
+.quick-action > div:nth-child(2) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.quick-action strong {
+  font-size: 13px;
+}
+
+.quick-action span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.architecture-list {
+  padding: 8px 15px;
+}
+
+.architecture-item {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.architecture-item:last-child {
+  border-bottom: 0;
+}
+
+.architecture-number {
+  width: 28px;
+  color: #7c8697;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.architecture-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.architecture-item strong {
+  font-size: 13px;
+}
+
+.architecture-item span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-admin-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 650px) {
+  .dashboard-main {
+    padding: 25px 14px 40px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-admin-card {
+    padding: 20px;
+  }
+
+  .hero-admin-card h2 {
+    font-size: 18px;
+  }
+
+  .content-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

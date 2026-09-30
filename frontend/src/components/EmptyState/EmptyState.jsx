@@ -19,7 +19,7 @@ export default function EmptyState({ onSuggestion }) {
     {
       icon: FileSearch,
       title: "Find information",
-      text: "What does our WFH policy say?",
+      text: "What does our Work From Home policy say?",
     },
     {
       icon: Sparkles,

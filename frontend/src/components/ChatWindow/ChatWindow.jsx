@@ -1,4 +1,4 @@
-git statusimport { Menu, Sparkles } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
 import { useRef, useEffect } from "react";
 
 import { useChat } from "../../context/ChatContext";

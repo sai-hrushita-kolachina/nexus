@@ -1,5 +1,3 @@
-
-
 Readme · MD
 # ✦ Nexus - AI Powered Company Assistant
  
@@ -77,6 +75,16 @@ Nexus uses JWT authentication, role-based authorization, and Google Sign-In.
 | Employee | Create an account, sign in, use the AI assistant, access company knowledge, and view conversation history. |
 | Administrator | Access the admin dashboard, upload company documents, manage the knowledge base, and monitor the document ecosystem. |
  
+### (f) Persistent Storage with Neon PostgreSQL
+
+Nexus stores its application data in **Neon** (serverless PostgreSQL) when `DATABASE_URL` is set:
+
+- User accounts (email/password and Google Sign-In)
+- Conversations and chat history
+- The original uploaded company documents (stored as binary, `BYTEA`)
+
+Data survives redeploys and restarts on hosts with temporary disks, such as Render's free tier. If `DATABASE_URL` is not set, Nexus falls back to a local SQLite file, so local development needs no extra setup.
+
 ## 3. System Architecture
  
 ```text
@@ -85,8 +93,8 @@ React + Vite UI
        ▼
 FastAPI Backend API
        │
-       ├── Authentication layer
-       ├── Chat / query layer ──────┐
+       ├── Authentication layer ────── Neon PostgreSQL
+       ├── Chat / query layer ──────┐   (users, chats, documents)
        └── Documents layer ─────────┼── PDF / text processing
                                     ▼
                                RAG engine 
@@ -102,6 +110,8 @@ FastAPI Backend API
                                     │
                              Grounded answer
 ```
+
+> **Note:** Neon PostgreSQL stores application data (users, conversations, messages, and the original uploaded files). ChromaDB stores the vector index. On startup, Nexus rebuilds the index from the files stored in Neon if it is empty (see 4(c)).
  
 ## 4. RAG Pipeline
  
@@ -121,6 +131,16 @@ User query → Query processing → Semantic / hybrid retrieval → Candidate do
 During retrieval, the LangChain Chroma vector store handles similarity search with relevance scores, which is combined with BM25 keyword search for hybrid retrieval.
  
 This separation keeps knowledge retrieval distinct from language generation.
+
+### (c) Persistence and restore on startup
+
+When an admin uploads a document, the original file is saved to Neon PostgreSQL in addition to being chunked and embedded into ChromaDB.
+
+```text
+Upload → Save original file to Neon → Chunk → Embed → ChromaDB
+```
+
+On backend startup, a background task compares the files stored in Neon with the ChromaDB index. Any document missing from the index is re-downloaded from Neon and re-ingested automatically. This keeps the knowledge base intact even when the server's local disk is wiped (for example, after a redeploy on Render's free tier).
  
  
 ## 5. Technology Stack
@@ -146,7 +166,9 @@ This separation keeps knowledge retrieval distinct from language generation.
 | AI / RAG | Sentence Transformers | Embeddings |
 | AI / RAG | FastEmbed | Embedding generation through LangChain |
 | AI / RAG | ChromaDB | Vector database |
-| Database | SQLite | Application data |
+| Database | SQLite | Application data (local development fallback) |
+| Database | Neon (PostgreSQL) | Persistent application data: users, chat history, uploaded files |
+| Database | psycopg2 | PostgreSQL driver |
 | Database | ChromaDB | Vector storage |
  
  
@@ -162,6 +184,7 @@ Nexus includes the following security mechanisms:
 - Google OAuth / Identity Services
 - API key protection through environment variables
 - `.gitignore` protection for local secrets and runtime databases
+- Neon connection string (`DATABASE_URL`) kept in environment variables, never committed; SSL enforced via `sslmode=require`
 ### Environment variables
  
 Store sensitive configuration in `backend/.env`:
@@ -195,6 +218,9 @@ TOP_K=8
 FINAL_K=5
 MIN_RELEVANCE_SCORE=0.30
  
+DATABASE_URL=postgresql://user:password@your-neon-host/neondb?sslmode=require
+
+# Local development fallback (used only when DATABASE_URL is not set)
 SQLITE_DATABASE=./data/company_ai.db
  
 VITE_FRONTEND_URL=your-frontend-url
@@ -251,7 +277,8 @@ npm run dev
 ```
  
 The frontend runs at `http://localhost:5173`.
- 
+
+
 ## 8. Admin Workflow
  
 ```text
@@ -259,7 +286,7 @@ Admin login → Admin dashboard → Upload document → Document processing → 
  → Embeddings → Vector database → Available for RAG
 ```
  
-Once documents are indexed, employees can query them through the AI assistant.
+Once documents are indexed, employees can query them through the AI assistant. The original file is also stored in Neon, so it is restored automatically if the server restarts with an empty vector index.
  
 ## 9. Employee Workflow
  
@@ -284,7 +311,8 @@ The assistant retrieves relevant company information and generates an answer gro
 ## 11. Future Improvements
  
 -  Production-grade vector database
--  Persistent cloud storage
+-  Persistent cloud storage (application data and uploaded files now persist in Neon; the vector index is still rebuilt from them on startup)
+-  Move vector storage to pgvector on Neon
 -  Advanced admin analytics
 -  Support for additional document formats
 -  Improved hybrid retrieval
@@ -297,9 +325,9 @@ Nexus can be deployed as two services:
 ```text
 Vercel  → Frontend (React)
 Render  → Backend (FastAPI)
+Neon    → Database (PostgreSQL)
 ```
- 
-For production, configure all required environment variables in the hosting platform rather than committing secrets to the repository.
+
  
 ## 13. Application
  
@@ -309,6 +337,3 @@ For production, configure all required environment variables in the hosting plat
 ## 14. Author
  
 **Sai Hrushita Kolachina**
- 
-GitHub: [sai-hrushita-kolachina](https://github.com/sai-hrushita-kolachina)
- 
